@@ -1,3 +1,4 @@
+// Spy - Tried to add prevention of teleportation when in a different dimension. Don't exactly know if it worked out. Feel free to toss if you want.
 package net.fybertech.journeystone;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -58,7 +59,7 @@ public class ItemJourneyStone extends Item
 		boolean hasKeys = false;		
 		NBTTagCompound tag = stack.getTagCompound();
 		if (tag != null) {			
-			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3)) hasKeys = true;
+			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3) && tag.hasKey("teleportDim", 3)) hasKeys = true;
 		}		
 		
 		if (hasKeys) {
@@ -67,20 +68,22 @@ public class ItemJourneyStone extends Item
 			int x = tag.getInteger("teleportX");
 			int y = tag.getInteger("teleportY");
 			int z = tag.getInteger("teleportZ");
+			int dim = tag.getInteger("teleportDim");
 			
-			if (!world.isRemote) {
-				//world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, "mob.endermen.portal", 1, 1);
-				world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, Sounds.entity_endermen_teleport, 1, 1);
-				
-				player.fallDistance = 0.0F;
-				player.setPositionAndUpdate(x + 0.5, y + 0.5, z + 0.5);
-				
-				//world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "mob.endermen.portal", 1, 1);
-				world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Sounds.entity_endermen_teleport, 1, 1);
-			}			
+			if (dim == entityplayer.dimension) {
+				if (!world.isRemote) {
+					//world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, "mob.endermen.portal", 1, 1);
+					world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, Sounds.entity_endermen_teleport, 1, 1);
+					
+					player.fallDistance = 0.0F;
+					player.setPositionAndUpdate(x + 0.5, y + 0.5, z + 0.5);
+					
+					//world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "mob.endermen.portal", 1, 1);
+					world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Sounds.entity_endermen_teleport, 1, 1);
+				}			
 			
-			stack.damageItem(1, player);			
-		}	
+				stack.damageItem(1, player);			
+		}	}
 		
 		return super.onItemUseFinish(stack, world, player);
 	}
@@ -90,14 +93,15 @@ public class ItemJourneyStone extends Item
 	public ItemUseResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, MainOrOffHand hand, EnumFacing facing, float x, float y, float z) 
 	{
 		// TODO - Don't let you teleport in the wrong dimension
+		// Spy - Tried to add this functionality. Don't exactly know if it works out. Feel free to toss if you want.
 		
 		boolean hasKeys = false;
 		boolean hasTempKeys = false;
 		
 		NBTTagCompound tag = stack.getTagCompound();
 		if (tag != null) {			
-			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3)) hasKeys = true;
-			if (tag.hasKey("confirmX", 3) && tag.hasKey("confirmY", 3) && tag.hasKey("confirmZ", 3)) hasTempKeys = true;
+			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3) && tag.hasKey("teleportDim", 3)) hasKeys = true;
+			if (tag.hasKey("confirmX", 3) && tag.hasKey("confirmY", 3) && tag.hasKey("confirmZ", 3) && tag.hasKey("confirmDim", 3)) hasTempKeys = true;
 		}
 
 		// Do it the hard way since we don't have enough mappings
@@ -119,7 +123,8 @@ public class ItemJourneyStone extends Item
 		if (!hasKeys && !hasTempKeys) {			
 			tag.setInteger("confirmX", destPos.getX());
 			tag.setInteger("confirmY", destPos.getY());
-			tag.setInteger("confirmZ", destPos.getZ());				
+			tag.setInteger("confirmZ", destPos.getZ());
+			tag.setInteger("confirmDim", entityplayer.dimension());
 	
 			if (world.isRemote) player.addChatMessage(new ChatComponentText("Select again to confirm coordinates."));
 		}
@@ -128,19 +133,23 @@ public class ItemJourneyStone extends Item
 			int cx = tag.getInteger("confirmX");
 			int cy = tag.getInteger("confirmY");
 			int cz = tag.getInteger("confirmZ");
-			if (cx == destPos.getX() && cy == destPos.getY() && cz == destPos.getZ()) {
+			int cd = tag.getInteger("confirmDim")
+			if (cx == destPos.getX() && cy == destPos.getY() && cz == destPos.getZ() && cd == entityplayer.dimension()) {
 				tag.removeTag("confirmX");
 				tag.removeTag("confirmY");
 				tag.removeTag("confirmZ");
+				tag.setInteger("confirmDim");
 				tag.setInteger("teleportX", destPos.getX());
 				tag.setInteger("teleportY", destPos.getY());
 				tag.setInteger("teleportZ", destPos.getZ());
+				tag.setInteger("teleportDim", entityplayer.dimension());
 				if (world.isRemote) player.addChatMessage(new ChatComponentText("Coordinates saved."));
 			}
 			else {
 				tag.setInteger("confirmX", destPos.getX());
 				tag.setInteger("confirmY", destPos.getY());
-				tag.setInteger("confirmZ", destPos.getZ());				
+				tag.setInteger("confirmZ", destPos.getZ());	
+				tag.setInteger("confirmtDim", entityplayer.dimension());
 		
 				if (world.isRemote) player.addChatMessage(new ChatComponentText("Select again to confirm coordinates."));
 			}
@@ -157,7 +166,7 @@ public class ItemJourneyStone extends Item
 		
 		NBTTagCompound tag = stack.getTagCompound();
 		if (tag != null) {			
-			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3)) hasKeys = true;
+			if (tag.hasKey("teleportX", 3) && tag.hasKey("teleportY", 3) && tag.hasKey("teleportZ", 3)) && tag.hasKey("teleportDim", 3)) hasKeys = true;
 		}
 		
 		if (hasKeys) {
