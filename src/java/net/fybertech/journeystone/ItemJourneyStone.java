@@ -70,13 +70,13 @@ public class ItemJourneyStone extends Item
 			
 			if (!world.isRemote) {
 				//world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, "mob.endermen.portal", 1, 1);
-				world.playSoundEffect(pos.xCoord, pos.yCoord, pos.zCoord, Sounds.entity_endermen_teleport, 1, 1);
+				world.playSoundEffect(null, pos.xCoord, pos.yCoord, pos.zCoord, Sounds.entity_endermen_teleport, 1, 1);
 				
 				player.fallDistance = 0.0F;
 				player.setPositionAndUpdate(x + 0.5, y + 0.5, z + 0.5);
 				
 				//world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "mob.endermen.portal", 1, 1);
-				world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Sounds.entity_endermen_teleport, 1, 1);
+				world.playSoundEffect(null, x + 0.5, y + 0.5, z + 0.5, Sounds.entity_endermen_teleport, 1, 1);
 			}			
 			
 			stack.damageItem(1, player);			
