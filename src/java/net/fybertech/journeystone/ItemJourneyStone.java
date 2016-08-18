@@ -88,9 +88,11 @@ public class ItemJourneyStone extends Item
 	
 	
 	@Override
-	public ItemUseResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, MainOrOffHand hand, EnumFacing facing, float x, float y, float z) 
+	public ItemUseResult onItemUse(EntityPlayer player, World world, BlockPos pos, MainOrOffHand hand, EnumFacing facing, float x, float y, float z) 
 	{
 		// TODO - Don't let you teleport in the wrong dimension
+		
+		ItemStack stack = player.getHeldItem(hand);
 		
 		boolean hasKeys = false;
 		boolean hasTempKeys = false;
@@ -147,13 +149,15 @@ public class ItemJourneyStone extends Item
 			}
 		}
 		
-		return super.onItemUse(stack, player, world, pos, hand, facing, x, y, z);
+		return super.onItemUse(player, world, pos, hand, facing, x, y, z);
 	}
 	
 	
 	@Override
-	public ObjectActionHolder<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, MainOrOffHand hand) 
-	{	
+	public ObjectActionHolder<ItemStack> onItemRightClick(World world, EntityPlayer player, MainOrOffHand hand) 
+	{
+		ItemStack stack = player.getHeldItem(hand);
+		
 		boolean hasKeys = false;
 		
 		NBTTagCompound tag = stack.getTagCompound();
