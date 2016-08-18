@@ -21,7 +21,8 @@ meddle {
 }
 
 dynamicmappings {
-    version = "022"
+    version = "023"
+    location='../dynamicmappings/build/libs/dynamicmappings-023.jar'
 }
 
 meddleapi {
@@ -29,12 +30,12 @@ meddleapi {
 }
 
 minecraft {
-    version = '15w49a'
+    version = '16w02a'
 }
 
 jar {
     baseName = 'journeystone'
-    version = '1.0.2'
+    version = '1.0.3'
     
     manifest {
 		attributes('MeddleAPI-Mods' : 'net.fybertech.journeystone.JourneyStoneMod')
