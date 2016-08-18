@@ -3,13 +3,13 @@ apply from: 'meddle.gradle'
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
-sourceSets {
+/*sourceSets {
 	main {
 		java {
 			srcDirs = ['src']
 		}
 	}
-}
+}*/
 
 
 greddle {
